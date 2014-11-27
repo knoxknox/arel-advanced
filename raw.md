@@ -370,3 +370,12 @@ PostQueryBuilder.new .with_comments_by(['camertron', 'catwithtail']) .with_title
 
 ---
 SCUTTLE www.scuttle.io
+
+```ruby
+binds = ['x', 'y', 'z'].map do |v|
+  Arel::Nodes::SqlLiteral.new(ActiveRecord::Base.quote_value("%#{v}%"))
+end
+
+arel_table = Arel::Table.new(:users)
+User.where(arel_table[:name].matches_any(binds))
+```
