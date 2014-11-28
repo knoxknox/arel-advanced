@@ -39,4 +39,5 @@ User.where(arel_table[:name].matches_any(binds))
 Part2: Hierarchy :47, AST: 48
 https://github.com/rails/arel
 http://www.rubydoc.info/github/rails/arel/Arel/Nodes/SqlLiteral
+https://github.com/activerecord-hackery/squeel
 http://patshaughnessy.net/2014/9/23/how-arel-converts-ruby-queries-into-sql-statements
