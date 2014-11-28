@@ -146,6 +146,207 @@ Post.where(title: 'Arel').each { |post| puts post.text }
 
 ## Select, Where, Join, Join association, Order
 
+SELECT
+
+```ruby
+Post.select(Arel.star).to_sql
+=> SELECT `posts`.* FROM `posts`
+```
+
+```ruby
+subquery = Post.select([:id, :text])
+Post.select(:id).from(subquery.ast).to_sql
+=> SELECT id FROM SELECT id, text FROM `posts`
+```
+
+```ruby
+Post.select(Post[:visitors].sum).to_sql
+=> SELECT SUM(`posts`.`visitors`) AS sum_id FROM `posts`
+```
+
+```ruby
+Post.select(Post[:visitors].minimum).to_sql
+=> SELECT MIN(`posts`.`visitors`) AS min_id FROM `posts`
+```
+
+```ruby
+Post.select(Post[:visitors].maximum).to_sql
+=> SELECT MAX(`posts`.`visitors`) AS max_id FROM `posts`
+```
+
+```ruby
+Post.select(Post[:visitors].sum.as('visitors_total')).to_sql
+=> SELECT SUM(`posts`.`visitors`) AS visitors_total FROM `posts`
+```
+
+```ruby
+Post.select(Arel::Nodes::NamedFunction.new('LENGTH', [Post[:text]]).as('length')).to_sql
+=> SELECT LENGTH(`posts`.`text`) AS length FROM `posts`
+```
+
+WHERE
+
+```ruby
+Post.where(title: 'Arel is Cool').to_sql
+=> SELECT `posts`.* FROM `posts` WHERE `posts`.`title` = 'Arel is Cool'
+```
+
+```ruby
+Post.where(Post[:visitors].gt(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` > 250)
+```
+
+```ruby
+Post.where(Post[:visitors].lt(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` < 250)
+```
+
+```ruby
+Post.where(Post[:visitors].gteq(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` >= 250)
+```
+
+```ruby
+Post.where(Post[:visitors].lteq(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` <= 250)
+```
+
+```ruby
+Post.where(Post[:title].not_eq(nil)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` IS NOT NULL)
+```
+
+```ruby
+Post.where(Post[:title].eq('Arel is Cool')).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE `posts`.`title` = 'Arel is Cool'
+```
+
+```ruby
+Post.where(Post[:title].not_eq('Arel is Cool')).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` != 'Arel is Cool')
+```
+
+```ruby
+Post.where(Post[:title].eq('Arel is Cool').and(Post[:id].in(22, 23))).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` = 'Arel is Cool' AND `posts`.`id` IN(22, 23))
+```
+
+```ruby
+Post.where(Post[:title].eq('Arel is Cool').and(NamedFunction.new('LENGTH', [Post[:slug]]).gt(10))).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` = 'Arel is Cool' AND LENGTH(`posts`.`slug`) > 10)
+```
+
+```ruby
+Post.where(Post[:title].eq('Arel is Cool').and(Post[:id].eq(22).or(Post[:id].eq(23)))).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` = 'Arel is Cool' AND (`posts`.`id` = 22 OR `posts`.`id` = 23))
+```
+
+JOIN
+
+```ruby
+# relations example
+Post:    has_many(:comments)
+Author:  belongs_to(:comment)
+Comment: belongs_to(:post), has_one(:author)
+```
+
+```ruby
+Author.joins(:comment).where(id: 42).to_sql
+=> SELECT `authors`.* FROM `authors`
+   INNER JOIN `comments` ON `comments`.`id` = `authors`.`comment_id`
+   WHERE `authors`.`id` = 42
+```
+
+```ruby
+Author.joins(:comment, comment: :post).where(Post[:id].eq(42)).to_sql
+=> SELECT `authors`.* FROM `authors`
+   INNER JOIN `comments` ON `comments`.`id` = `authors`.`comment_id`
+   INNER JOIN `posts` ON `posts`.`id` = `comments`.`post_id` WHERE `posts`.`id` = 42
+```
+
+```ruby
+Author.
+  joins(:comment).
+  joins(Comment.joins(:post).join_sources).where(Post[:id].eq(42)).to_sql
+
+=> SELECT `authors`.* FROM `authors`
+   INNER JOIN `comments` ON `comments`.`id` = `authors`.`comment_id`
+   INNER JOIN `posts` ON `posts`.`id` = `comments`.`post_id` WHERE `posts`.`id` = 42
+```
+
+```ruby
+Author.
+  joins(
+    Author.arel_table.join(
+      Comment.arel_table, Arel::OuterJoin).on(Comment[:id].eq(Author[:comment_id])
+    ).join_sources
+  ).
+  joins(
+    Comment.arel_table.join(
+      Post.arel_table, Arel::OuterJoin).on(Post[:id].eq(Comment[:post_id])
+    ).join_sources
+  ).where(Post[:id].eq(42)).to_sql
+
+=> SELECT `authors`.* FROM `authors`
+   LEFT OUTER JOIN `comments` ON `comments`.`id` = `authors`.`comment_id`
+   LEFT OUTER JOIN `posts` ON `posts`.`id` = `comments`.`post_id` WHERE `posts`.`id` = 42
+```
+
+JOIN ASSOCIATION
+
+```ruby
+include ArelHelpers::JoinAssociation
+Author.
+  joins(join_association(Author, :comment, Arel::OuterJoin)).
+  joins(join_association(Comment, :post, Arel::OuterJoin)).where(Post[:id].eq(42)).to_sql
+```
+
+```ruby
+include ArelHelpers::JoinAssociation
+Author.
+  joins(join_association(Author, :comment) { |assoc_name, join_conds|
+    join_conds.and(Comment[:created_at].lteq(Date.yesterday))
+  }).
+  joins(join_association(Comment, :post, Arel::OuterJoin)).where(Post[:id].eq(42)).to_sql
+
+=> SELECT `authors`.* FROM `authors`
+   INNER JOIN `comments` ON
+     `comments`.`id` = `authors`.`comment_id`AND `comments`.`created_at` <= '2014-04-15'
+   LEFT OUTER JOIN `posts` ON `posts`.`id` = `comments`.`post_id` WHERE `posts`.`id` = 42
+```
+
+```ruby
+# relations example
+Course: has_and_belongs_to_many(:teachers)
+Teacher: has_and_belongs_to_many(:courses)
+
+Course.arel_table
+Teacher.arel_table
+ct = Arel::Table.new(:courses_teachers)
+
+Course.joins(
+  Course.arel_table.join(Teacher.arel_table).
+    on(Course[:id].eq(ct[:course_id])).and(
+      Teacher[:id].eq(ct[:teacher_id])).join_sources).to_sql
+```
+
+ORDER
+
+```ruby
+Post.order(:views).to_sql
+=> SELECT `posts`.* FROM `posts` ORDER BY views
+```
+
+```ruby
+Post.order(Post[:views].desc).to_sql
+=> SELECT `posts`.* FROM `posts` ORDER BY views DESC
+```
+
+```ruby
+Post.order(:views).reverse_order.to_sql
+=> SELECT `posts`.* FROM `posts` ORDER BY views DESC
+```
+
 ## And, Or, Less / Greater than, Not equals, etc
 
 ## Match, In
