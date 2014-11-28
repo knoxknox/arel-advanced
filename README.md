@@ -65,6 +65,29 @@ What benefits ?
 
 ## Arel vs ActiveRecord
 
+Arel
+
+- relational algebra for ruby
+- builds SQL queries, generates AST's
+- enables chaining
+- applies query optimizations
+- doesn't retrieve or store data
+- knows nothing about your models
+- knows very little about your database
+
+ActiveRecord
+
+- abstraction
+  - no need to speak SQL dialect
+- persistence
+  - database rows as ruby objects
+- domain logic
+  - models define associations
+  - models contain app logic, validations, etc
+
+Arel constructs queries.
+ActiveRecord does everything else.
+
 ## Tables, Columns
 
 ## Terminal methods
