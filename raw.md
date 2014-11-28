@@ -1,42 +1,15 @@
-## 2) TABLES, COLUMNS
+## 3) TERMINAL METHODS
 
+ActiveRecord::Relation
 ```ruby
-# AREL-HELPERS GEM
-gem install arel-helpers
-gem 'arel-helpers', '~> 1.1.0'
-```
-
-```ruby
-class Post < ActiveRecord::Base
-  has_many :comments
-end
-
-Post.arel_table[:id]
-Post.arel_table[:text]
-=> #<struct Arel::Attributes::Attribute ... >
-```
-
-```ruby
-class Post < ActiveRecord::Base
-  include ArelHelpers::ArelTable
-
-  has_many :comments
-end
-
-Post[:id] # Post.arel_table[:id]
-Post[:text] # Post.arel_table[:text]
-=> #<struct Arel::Attributes::Attribute ... >
-```
-
-```ruby
-# ActiveRecord::Relation
 query = Post.select(:id)
 query = query.select(:title)
 query.to_sql
 => SELECT id, title FROM `posts`
 ```
+Relations can be chained
 
-## 3) TERMINAL METHODS
+
 
 ```ruby
 Post.select([:id, :text]).to_sql
@@ -275,3 +248,5 @@ end
 arel_table = Arel::Table.new(:users)
 User.where(arel_table[:name].matches_any(binds))
 ```
+Part2: Hierarchy :47, AST: 48
+http://patshaughnessy.net/2014/9/23/how-arel-converts-ruby-queries-into-sql-statements

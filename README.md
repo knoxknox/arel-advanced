@@ -90,6 +90,23 @@ ActiveRecord does everything else.
 
 ## Tables, Columns
 
+Install gem arel-helpers
+```ruby
+gem install arel-helpers
+gem 'arel-helpers', '~> 2.0.0'
+```
+
+Include it to your models
+```ruby
+class Post < ActiveRecord::Base
+  include ArelHelpers::ArelTable
+end
+
+Post[:id]   # Post.arel_table[:id]
+Post[:text] # Post.arel_table[:text]
+=> #<struct Arel::Attributes::Attribute ... >
+```
+
 ## Terminal methods
 
 ## Select, Where, Join, Join association, Order
