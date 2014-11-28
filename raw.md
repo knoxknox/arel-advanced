@@ -1,22 +1,3 @@
-arel-advanced
-=============
-
-0) WHAT iS AREL
-
-1) ACTIVERECORD VS AREL
-
-2) TABLES, COLUMNS
-
-3) TERMINAL METHODS
-
-4) SELECT, WHERE, JOIN, JOIN ASSOCIATION, ORDER
-
-5) AND, OR , GREATER/LESS THAN, NOT EQUALS, ETC
-
-6) MATCH, IN
-
-7) QUERY BUILDERS
-
 ## 0) WHAT iS AREL
 
 Arel is a SQL AST manager for Ruby.
@@ -123,7 +104,7 @@ Post.arel_table[:text]
 ```ruby
 class Post < ActiveRecord::Base
   include ArelHelpers::ArelTable
-  
+
   has_many :comments
 end
 
