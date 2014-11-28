@@ -109,6 +109,41 @@ Post[:text] # Post.arel_table[:text]
 
 ## Terminal methods
 
+ActiveRecord::Relation
+```ruby
+query = Post.select(:id)
+query = query.select(:title)
+query.to_sql
+=> SELECT id, title FROM `posts`
+```
+
+The serendipity of 'select'
+```ruby
+Post.select(:id).to_sql
+=> SELECT id FROM `posts`
+
+Post.select(:id).count.to_sql
+=> NoMethodError: undefined method 'to_sql' for 26:Fixnum
+```
+
+What happened? .count is a terminal method
+```ruby
+Post.select([Post[:id].count, :text]).to_sql
+=> SELECT COUNT(`posts`.`id`), text FROM `posts`
+```
+
+Terminal methods
+
+- execute immediately
+- don't return an ActiveRecord::Relation
+- count, first, last, to_a, pluck, each, map, etc
+
+```ruby
+# both execute the query immediately
+Post.where(title: 'Arel').each_slice(3)
+Post.where(title: 'Arel').each { |post| puts post.text }
+```
+
 ## Select, Where, Join, Join association, Order
 
 ## And, Or, Less / Greater than, Not equals, etc
