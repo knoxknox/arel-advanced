@@ -7,7 +7,7 @@ Table of contents:
 2. Arel vs ActiveRecord
 3. Tables, Columns
 4. Terminal methods
-5. Select, Where, Join, Join association, Order
+5. Select, Where, Order, Join, Join association
 6. And, Or, Less / Greater than, Not equals, etc
 7. Match, In
 8. Query builders
@@ -144,7 +144,7 @@ Post.where(title: 'Arel').each_slice(3)
 Post.where(title: 'Arel').each { |post| puts post.text }
 ```
 
-## Select, Where, Join, Join association, Order
+## Select, Where, Order, Join, Join association
 
 SELECT
 
@@ -241,6 +241,23 @@ Post.where(Post[:title].eq('Arel is Cool').and(Post[:id].eq(22).or(Post[:id].eq(
 => SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` = 'Arel is Cool' AND (`posts`.`id` = 22 OR `posts`.`id` = 23))
 ```
 
+ORDER
+
+```ruby
+Post.order(:views).to_sql
+=> SELECT `posts`.* FROM `posts` ORDER BY views
+```
+
+```ruby
+Post.order(Post[:views].desc).to_sql
+=> SELECT `posts`.* FROM `posts` ORDER BY views DESC
+```
+
+```ruby
+Post.order(:views).reverse_order.to_sql
+=> SELECT `posts`.* FROM `posts` ORDER BY views DESC
+```
+
 JOIN
 
 ```ruby
@@ -328,23 +345,6 @@ Course.joins(
   Course.arel_table.join(Teacher.arel_table).
     on(Course[:id].eq(ct[:course_id])).and(
       Teacher[:id].eq(ct[:teacher_id])).join_sources).to_sql
-```
-
-ORDER
-
-```ruby
-Post.order(:views).to_sql
-=> SELECT `posts`.* FROM `posts` ORDER BY views
-```
-
-```ruby
-Post.order(Post[:views].desc).to_sql
-=> SELECT `posts`.* FROM `posts` ORDER BY views DESC
-```
-
-```ruby
-Post.order(:views).reverse_order.to_sql
-=> SELECT `posts`.* FROM `posts` ORDER BY views DESC
 ```
 
 ## And, Or, Less / Greater than, Not equals, etc
