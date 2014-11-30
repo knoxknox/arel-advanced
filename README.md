@@ -18,7 +18,7 @@ Arel is a SQL AST manager for Ruby.
 
 Let's start from a simple typical query.
 ```ruby
-Posts.
+Post.
   joins(
     'JOIN comments ON comments.post_id = posts.id',
     'JOIN authors ON authors.id = comments.author_id').
@@ -41,7 +41,7 @@ where('authors.name = ? AND posts.active = ?', 'JDoe', true)
 
 First of all, change joins to the symbol literals.
 ```ruby
-Posts.
+Post.
   joins(:comments).
   joins(comments: :author).
   where('authors.name = ? AND posts.active = ?', 'JDoe', true)
