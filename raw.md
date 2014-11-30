@@ -1,15 +1,3 @@
-## 6) MATCH, IN
-
-```ruby
-Post.where( Post.arel_table[:title].in( Post.select(:title).where(id: 5).ast ) ).to_sql
-  => SELECT `phrases`.* FROM `phrases` WHERE `phrases`.`title` IN ( SELECT title FROM `phrases` WHERE `phrases`.`id` = 5 )
-```
-
-```ruby
-Post.where(Post[:title].matches("%arel%")).to_sql
-  => SELECT `phrases`.* FROM `phrases` WHERE (`phrases`.`key` LIKE x'256172656c25')
-```
-
 ## 7) QUERY BUILDERS
 
 ```ruby

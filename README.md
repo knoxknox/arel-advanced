@@ -351,4 +351,14 @@ Course.joins(
 
 ## Match, In
 
+```ruby
+Post.where(Post[:title].matches('%arel%')).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` LIKE '%arel%')
+```
+
+```ruby
+Post.where(Post.arel_table[:title].in(Post.select(:title).where(id: 5).ast)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE `posts`.`title` IN (SELECT title FROM `posts` WHERE `posts`.`id` = 5)
+```
+
 ## Query builders
