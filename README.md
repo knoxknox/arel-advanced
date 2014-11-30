@@ -41,7 +41,7 @@ joins('JOIN authors ON authors.id = comments.author_id')
 where('authors.name = ? AND posts.active = ?', 'JDoe', true)
 ```
 
-First of all, change joins to the symbol literals.
+First of all, change joins to the native syntax.
 ```ruby
 Post.
   joins(:comments).
@@ -49,7 +49,7 @@ Post.
   where('authors.name = ? AND posts.active = ?', 'JDoe', true)
 ```
 
-Better way: keep calm & avoid literal strings in your queries.
+Better way: keep calm and avoid literal strings in queries.
 ```ruby
 Post.
   joins(:comments).
