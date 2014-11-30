@@ -27,11 +27,13 @@ Post.
 
 This query has some problems and confusions.
 ```ruby
+# joins:
 # no syntax checking
 # have to know mysql syntax
 # have to write 'join' and 'on'
 joins('JOIN authors ON authors.id = comments.author_id')
 
+# where:
 # no syntax checking
 # not object-oriented
 # have to know mysql syntax
