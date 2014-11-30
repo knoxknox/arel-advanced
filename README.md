@@ -41,7 +41,7 @@ joins('JOIN authors ON authors.id = comments.author_id')
 where('authors.name = ? AND posts.active = ?', 'JDoe', true)
 ```
 
-First of all, change joins to the native syntax.
+First of all, change joins to the native AR syntax.
 ```ruby
 Post.
   joins(:comments).
@@ -64,6 +64,8 @@ What benefits ?
 - object-oriented (chainable)
 - don't have to know sql syntax
 - easy to read - it's just ruby
+
+Read more: https://github.com/rails/arel
 
 ## Arel vs ActiveRecord
 
