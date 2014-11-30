@@ -89,8 +89,9 @@ ActiveRecord
   - models define associations
   - models contain app logic, validations, etc
 
-Arel constructs queries.
-ActiveRecord does everything else.
+Arel **constructs** queries.<br/>
+ActiveRecord does everything else.<br/>
+Read more: [how arel converts queries](http://goo.gl/aA7bvi)
 
 ## Tables, Columns
 
