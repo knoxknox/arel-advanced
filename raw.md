@@ -44,7 +44,12 @@ User.from(user.create_table_alias(:users, 'u')).to_sql
 Arel::Table.new(:users, as: :u).project(Arel.star).to_sql
 => SELECT * FROM `users` `u`
 ```
-
+```ruby
+User.scoped.arel.
+  project('UCASE(name)', Arel::SqlLiteral.new('2+2').as('num')).
+  from(Arel::Table.new(:users_table, as: 'u')).as('subquery').to_sql
+=> "(SELECT `users`.*, UCASE(name), 2+2 AS num FROM `users_table` `u` ) subquery"
+```
 SCUTTLE www.scuttle.io
 
 ```ruby
