@@ -186,8 +186,10 @@ Post.select(Post[:visitors].sum.as('visitors_total')).to_sql
 ```
 
 ```ruby
-Post.select(Arel::Nodes::NamedFunction.new('LENGTH', [Post[:text]]).as('length')).to_sql
-=> SELECT LENGTH(`posts`.`text`) AS length FROM `posts`
+fn = Arel::Nodes::NamedFunction
+query = fn.new('LENGTH', [ Post[:text] ])
+Post.select(query.as('post_text_length')).to_sql
+=> SELECT LENGTH(`posts`.`text`) AS post_text_length FROM `posts`
 ```
 
 WHERE
@@ -352,6 +354,26 @@ Course.joins(
     on(Course[:id].eq(ct[:course_id])).and(
       Teacher[:id].eq(ct[:teacher_id])).join_sources).to_sql
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## And, Or, Less / Greater than, Not equals, etc
 
