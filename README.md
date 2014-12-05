@@ -355,26 +355,6 @@ Course.joins(
       Teacher[:id].eq(ct[:teacher_id])).join_sources).to_sql
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## And, Or, Less / Greater than, Not equals, etc
 
 ## Match, In
