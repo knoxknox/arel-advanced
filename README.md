@@ -87,7 +87,7 @@ ActiveRecord
   - database rows as ruby objects
 - domain logic
   - models define associations
-  - models contain app logic, validations, etc
+  - models contain app logic, validations, etc.
 
 Arel **constructs** queries.<br/>
 ActiveRecord does everything else.<br/>
@@ -129,7 +129,7 @@ Post.select(:id).to_sql
 => SELECT id FROM `posts`
 
 Post.select(:id).count.to_sql
-=> NoMethodError: undefined method 'to_sql' for 26:Fixnum
+=> NoMethodError: undefined method 'to_sql' for 42:Fixnum
 ```
 
 What happened? .count is a terminal method
@@ -142,7 +142,7 @@ Terminal methods
 
 - execute immediately
 - don't return an ActiveRecord::Relation
-- count, first, last, to_a, pluck, each, map, etc
+- count, first, last, to_a, pluck, each, map, etc.
 
 ```ruby
 # both execute the query immediately
