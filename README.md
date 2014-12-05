@@ -196,7 +196,7 @@ WHERE
 
 ```ruby
 Post.where(title: 'Arel is Cool').to_sql
-=> SELECT `posts`.* FROM `posts` WHERE `posts`.`title` = 'Arel is Cool'
+=> SELECT * FROM `posts` WHERE `posts`.`title` = 'Arel is Cool'
 ```
 
 ```ruby
@@ -235,8 +235,8 @@ Post.where(Post[:title].not_eq('Arel is Cool')).to_sql
 ```
 
 ```ruby
-Post.where(Post[:title].eq('Arel is Cool').and(Post[:id].in(22, 23))).to_sql
-=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` = 'Arel is Cool' AND `posts`.`id` IN(22, 23))
+Post.where(Post[:title].eq('Arel is Cool').and(Post[:id].in([22, 23]))).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` = 'Arel is Cool' AND `posts`.`id` IN (22, 23))
 ```
 
 ```ruby
