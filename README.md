@@ -238,24 +238,21 @@ Post.where(Post[:title].not_eq('Arel is Cool')).to_sql
 ids_condition = Post[:id].in([22, 23])
 title_condition = Post[:title].eq('Arel is Cool')
 Post.where(title_condition.and(ids_condition)).to_sql
-=> SELECT `posts`.* FROM `posts`
-   WHERE (`posts`.`title` = 'Arel is Cool' AND `posts`.`id` IN (22, 23))
+=> ...(`posts`.`title` = 'Arel is Cool' AND `posts`.`id` IN (22, 23))
 ```
 
 ```ruby
 title_condition = Post[:title].eq('Arel is Cool')
 post_slug_length = NamedFunction.new('LENGTH', [Post[:slug]])
 Post.where(title_condition.and(post_slug_length.gt(10))).to_sql
-=> SELECT `posts`.* FROM `posts`
-   WHERE (`posts`.`title` = 'Arel is Cool' AND LENGTH(`posts`.`slug`) > 10)
+=> ...(`posts`.`title` = 'Arel is Cool' AND LENGTH(`posts`.`slug`) > 10)
 ```
 
 ```ruby
 title_condition = Post[:title].eq('Arel is Cool')
 ids_or_condition = Post[:id].eq(22).or(Post[:id].eq(23))
 Post.where(title_condition.and(ids_or_condition)).to_sql
-=> SELECT `posts`.* FROM `posts`
-   WHERE (`posts`.`title` = 'Arel is Cool' AND (`posts`.`id` = 22 OR `posts`.`id` = 23))
+=> ...(`posts`.`title` = 'Arel is Cool' AND (`posts`.`id` = 22 OR `posts`.`id` = 23))
 ```
 
 ORDER
