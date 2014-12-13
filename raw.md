@@ -61,4 +61,5 @@ arel_table = Arel::Table.new(:users)
 User.where(arel_table[:name].matches_any(binds))
 ```
 http://www.rubydoc.info/github/rails/arel/Arel/Nodes/SqlLiteral
+https://github.com/prathamesh-sonpatki/torm
 https://github.com/activerecord-hackery/squeel
