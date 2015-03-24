@@ -282,14 +282,16 @@ Comment: belongs_to(:post), has_one(:author)
 ```
 
 ```ruby
-Author.joins(:comment).where(id: 42).to_sql
+Author.joins(:comment).where(id: 42, comment: {rate: rand}).to_sql
+
 => SELECT `authors`.* FROM `authors`
    INNER JOIN `comments` ON `comments`.`id` = `authors`.`comment_id`
-   WHERE `authors`.`id` = 42
+   WHERE `authors`.`id` = 42 AND `comments`.`rate` = 0.0942857163428
 ```
 
 ```ruby
 Author.joins(:comment, comment: :post).where(Post[:id].eq(42)).to_sql
+
 => SELECT `authors`.* FROM `authors`
    INNER JOIN `comments` ON `comments`.`id` = `authors`.`comment_id`
    INNER JOIN `posts` ON `posts`.`id` = `comments`.`post_id` WHERE `posts`.`id` = 42
@@ -306,21 +308,21 @@ Author.
 ```
 
 ```ruby
-Author.
-  joins(
-    Author.arel_table.join(
-      Comment.arel_table, Arel::OuterJoin).on(Comment[:id].eq(Author[:comment_id])
-    ).join_sources
-  ).
-  joins(
-    Comment.arel_table.join(
-      Post.arel_table, Arel::OuterJoin).on(Post[:id].eq(Comment[:post_id])
-    ).join_sources
-  ).where(Post[:id].eq(42)).to_sql
+post_table = Post.arel_table
+comment_table = Comment.arel_table
+
+post_condition = Post[:id].eq(Comment[:post_id])
+comment_condition = Comment[:id].eq(Author[:comment_id])
+
+comments = Author.join(comment_table, Arel::OuterJoin).on(comment_condition)
+comments_posts = Comment.join(post_table, Arel::OuterJoin).on(post_condition)
+
+author_with_comments = Author.joins(comments.join_sources)
+author_with_comments.joins(comments_posts.join_sources).where(synced: 1).to_sql
 
 => SELECT `authors`.* FROM `authors`
    LEFT OUTER JOIN `comments` ON `comments`.`id` = `authors`.`comment_id`
-   LEFT OUTER JOIN `posts` ON `posts`.`id` = `comments`.`post_id` WHERE `posts`.`id` = 42
+   LEFT OUTER JOIN `posts` ON `posts`.`id` = `comments`.`post_id` WHERE `synced` = 1
 ```
 
 JOIN ASSOCIATION
