@@ -329,23 +329,25 @@ JOIN ASSOCIATION
 
 ```ruby
 include ArelHelpers::JoinAssociation
-Author.
-  joins(join_association(Author, :comment, Arel::OuterJoin)).
-  joins(join_association(Comment, :post, Arel::OuterJoin)).where(Post[:id].eq(42)).to_sql
+comments = join_association(Author, :comment, Arel::OuterJoin)
+comments_posts = join_association(Comment, :post, Arel::OuterJoin)
+
+Author.joins(comments).joins(comments_posts).where(synced: 1).to_sql
 ```
 
 ```ruby
 include ArelHelpers::JoinAssociation
-Author.
-  joins(join_association(Author, :comment) { |assoc_name, join_conds|
-    join_conds.and(Comment[:created_at].lteq(Date.yesterday))
-  }).
-  joins(join_association(Comment, :post, Arel::OuterJoin)).where(Post[:id].eq(42)).to_sql
+comments = join_association(Author, :comment) do |name, ctx|
+  ctx.and(Comment[:last_synchronized_at].lteq(Date.yesterday))
+end
+
+Author.joins(comments).where(synced: 1, comments: {post_id: 42}).to_sql
 
 => SELECT `authors`.* FROM `authors`
    INNER JOIN `comments` ON
-     `comments`.`id` = `authors`.`comment_id`AND `comments`.`created_at` <= '2014-04-15'
-   LEFT OUTER JOIN `posts` ON `posts`.`id` = `comments`.`post_id` WHERE `posts`.`id` = 42
+     `comments`.`id` = `authors`.`comment_id` AND
+     `comments`.`last_synchronized_at` <= '2000-01-01'
+   WHERE `authors`.`synced` = 1 AND `comments`.`post_id` = 42
 ```
 
 ```ruby
@@ -353,14 +355,12 @@ Author.
 Course: has_and_belongs_to_many(:teachers)
 Teacher: has_and_belongs_to_many(:courses)
 
-Course.arel_table
-Teacher.arel_table
-ct = Arel::Table.new(:courses_teachers)
+courses_teachers = Arel::Table.new(:courses_teachers)
+courses_eq_condition = Course[:id].eq(courses_teachers[:course_id])
+teachers_eq_condition = Teacher[:id].eq(courses_teachers[:teacher_id])
 
-Course.joins(
-  Course.arel_table.join(Teacher.arel_table).
-    on(Course[:id].eq(ct[:course_id])).and(
-      Teacher[:id].eq(ct[:teacher_id])).join_sources).to_sql
+Course.joins(Course.arel_table.join(Teacher.arel_table).
+  on(courses_eq_condition).and(teachers_eq_condition).join_sources).to_sql
 ```
 
 ## And, Or, Less / Greater than, Not equals, etc
