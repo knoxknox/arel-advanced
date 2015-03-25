@@ -8,9 +8,8 @@ Table of contents:
 3. Tables, Columns
 4. Terminal methods
 5. Select, Where, Order, Join, Join association
-6. And, Or, Less / Greater than, Not equals, etc
-7. Match, In
-8. Query builders
+6. Predications (or, and, eq, gt, in, match, etc)
+7. Query builders
 
 ## What is Arel
 
@@ -364,19 +363,74 @@ Course.joins(Course.arel_table.join(Teacher.arel_table).
   on(courses_eq_condition).and(teachers_eq_condition).join_sources).to_sql
 ```
 
-## And, Or, Less / Greater than, Not equals, etc
-
-## Match, In
+## Predications (or, and, eq, gt, in, match, etc)
 
 ```ruby
-Post.where(Post[:title].matches('%arel%')).to_sql
-=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`title` LIKE '%arel%')
+Post.where(Post[:visitors].eq(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE `posts`.`visitors` = 250
 ```
 
 ```ruby
-Post.where(Post.arel_table[:title].in(Post.select(:title).where(id: 5).ast)).to_sql
-=> SELECT `posts`.* FROM `posts` WHERE `posts`.`title` IN (SELECT title FROM `posts` WHERE `posts`.`id` = 5)
+Post.where(Post[:visitors].not_eq(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE `posts`.`visitors` != 250
 ```
+
+```ruby
+Post.where(Post[:visitors].gt(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` > 250)
+```
+
+```ruby
+Post.where(Post[:visitors].lt(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` < 250)
+```
+
+```ruby
+Post.where(Post[:visitors].gteq(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` >= 250)
+```
+
+```ruby
+Post.where(Post[:visitors].lteq(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` <= 250)
+```
+
+```ruby
+Post.where(Post[:visitors].in(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE `posts`.`visitors` IN (250)
+```
+
+```ruby
+Post.where(Post[:visitors].not_in(250)).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors` NOT IN (250))
+```
+
+```ruby
+Post.where(Post[:visitors_name].matches('%arel%')).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors_name` LIKE '%arel%')
+```
+
+```ruby
+Post.where(Post[:visitors_name].does_not_match('%arel%')).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`posts`.`visitors_name` NOT LIKE '%arel%')
+```
+
+```ruby
+Post.where(Post[:visitors].eq_any([250, 300])).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`visitors` = 250 OR `visitors` = 300)
+```
+
+```ruby
+Post.where(Post[:visitors].eq_all([250, 300])).to_sql
+=> SELECT `posts`.* FROM `posts` WHERE (`visitors` = 250 AND `visitors` = 300)
+```
+
+```ruby
+Post.where(Post.arel_table[:title].in(Post.select(:title).where(id: 42).ast)).to_sql
+=> SELECT * FROM `posts` WHERE `title` IN (SELECT title FROM `posts` WHERE `id` = 42)
+```
+
+Read more: [Arel::Predications](http://www.rubydoc.info/github/rails/arel/Arel/Predications)
 
 ## Query builders
 
