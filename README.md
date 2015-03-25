@@ -8,7 +8,7 @@ Table of contents:
 3. Tables, Columns
 4. Terminal methods
 5. Select, Where, Order, Join, Join association
-6. Predications (or, and, eq, gt, in, match, etc)
+6. Predications (or, and, eq, gt, lt, in, match, etc)
 7. Query builders
 
 ## What is Arel
@@ -363,7 +363,7 @@ Course.joins(Course.arel_table.join(Teacher.arel_table).
   on(courses_eq_condition).and(teachers_eq_condition).join_sources).to_sql
 ```
 
-## Predications (or, and, eq, gt, in, match, etc)
+## Predications (or, and, eq, gt, lt, in, match, etc)
 
 ```ruby
 Post.where(Post[:visitors].eq(250)).to_sql
