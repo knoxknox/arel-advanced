@@ -337,6 +337,7 @@ Author.joins(comments).joins(comments_posts).where(synced: 1).to_sql
 
 ```ruby
 include ArelHelpers::JoinAssociation
+# custom condition for join_association
 comments = join_association(Author, :comment) do |name, ctx|
   ctx.and(Comment[:last_synchronized_at].lteq(Date.yesterday))
 end
