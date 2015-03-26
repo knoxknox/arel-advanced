@@ -472,3 +472,18 @@ class PostQueryBuilder < QueryBuilder
   end
 end
 ```
+
+```ruby
+PostQueryBuilder.new.
+  with_title_like('arel').
+  created_since_yesterday.
+  with_comments_by(['camertron','catwithtail','caymutings']).to_sql
+
+=> SELECT `posts`.* FROM `posts`
+   INNER JOIN `comments` ON `comments`.`post_id` = `posts`.`id`
+   INNER JOIN `authors` ON `authors`.`comment_id` = `comments`.`id`
+   WHERE
+   (`posts`.`title` LIKE '%arel%') AND
+   (`posts`.`created_at` >= '2000-01-01') AND
+   `authors`.`username` IN ('camertron', 'catwithtail', 'caymutings')
+```
