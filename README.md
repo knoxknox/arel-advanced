@@ -430,7 +430,7 @@ Post.where(Post.arel_table[:title].in(Post.select(:title).where(id: 42).ast)).to
 => SELECT * FROM `posts` WHERE `title` IN (SELECT title FROM `posts` WHERE `id` = 42)
 ```
 
-Read more: [Arel::Predications](http://www.rubydoc.info/github/rails/arel/Arel/Predications)
+Read more: [arel predications](http://www.rubydoc.info/github/rails/arel/Arel/Predications)
 
 ## Query builders
 
@@ -456,33 +456,19 @@ end
 ```ruby
 class PostQueryBuilder < QueryBuilder
   def initialize(query = nil)
-    super(query || post.unscoped)
+    super(query || Post.unscoped)
   end
 
-  def with_title_matching(title)
-    reflect query.where(post[:title].matches("%#{title}%"))
+  def with_title_like(title)
+    reflect query.where(Post[:title].matches("%#{title}%"))
   end
 
-  def since_yesterday
-    reflect query.where(post[:created_at].gteq(Date.yesterday))
+  def created_since_yesterday
+    reflect query.where(Post[:created_at].gteq(Date.yesterday))
   end
 
   def with_comments_by(usernames)
-    reflect query.joins(comments: :author).where(author[:username].in(usernames))
-  end
-
-
-  private
-
-  def post
-    Post.arel_table
-  end
-
-  def author
-    Author.arel_table
+    reflect query.joins(comments: :author).where(Author[:username].in(usernames))
   end
 end
-
-PostQueryBuilder.new.with_comments_by(['camertron', 'catwithtail']).with_title_matching('arel').since_yesterday.to_sql
-=> SELECT `posts`.* FROM `posts` INNER JOIN `comments` ON `comments`.`post_id` = `posts`.`id` INNER JOIN `authors` ON `authors`.`comment_id` = `comments`.`id` WHERE `authors`.`username` IN ('camertron', 'catwithtail') AND (`posts`.`title` LIKE '%arel%') AND (`posts`.`created_at` >= '2014-04-20')
 ```
