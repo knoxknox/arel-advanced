@@ -474,6 +474,7 @@ end
 ```
 
 ```ruby
+# usage example
 PostQueryBuilder.new.
   with_title_like('arel').
   created_since_yesterday.
