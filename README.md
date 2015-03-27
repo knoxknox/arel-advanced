@@ -488,3 +488,13 @@ PostQueryBuilder.new.
    (`posts`.`created_at` >= '2000-01-01') AND
    `authors`.`username` IN ('camertron', 'catwithtail', 'caymutings')
 ```
+
+## Resources
+
+- http://www.scuttle.io
+- http://github.com/rails/arel
+- http://github.com/samleb/sexy_scopes
+- http://github.com/camertron/arel-helpers
+- http://github.com/prathamesh-sonpatki/torm
+- http://github.com/activerecord-hackery/squeel
+- http://www.rubydoc.info/github/rails/arel/index
