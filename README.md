@@ -91,7 +91,7 @@ ActiveRecord
 Arel **constructs** queries.<br/>
 ActiveRecord does everything else.<br/>
 
-Read more: [how arel converts queries](http://goo.gl/aA7bvi)
+Read more: [how arel converts queries](http://bit.ly/2JPSN1A)
 
 ## Tables, Columns
 
